@@ -1,0 +1,85 @@
+---
+title: "NFL Data Manipulation"
+author: "Justin Mai"
+date: "2023-12-18"
+output: html_document
+---
+
+```{r}
+library(tidyverse)
+library(readr)
+```
+
+```{r}
+weekly <- read.csv("weekly_data_updated_08_23.csv")
+yearly <- read.csv("yearly_data_updated_08_23.csv")
+
+```
+
+Filtering by position
+
+```{r}
+yearly <- yearly %>% 
+  select(!c(id,season_type,sacks,sack_yards,ypa,count,round,overall,ht,wt,forty,vertical))
+
+wr <- yearly %>% 
+  filter(position == "WR") %>% 
+  select(!c(completions,attempts,passing_yards,passing_tds,passing_air_yards,passing_yards_after_catch,passing_first_downs,passing_2pt_conversions,sack_fumbles,sack_fumbles_lost,ypr,rookie_season,teams_offense_snaps,years_played,ypc,interceptions,comp_percentage,int_percentage,pass_td_percentage,offense_snaps))
+
+te <- yearly %>% 
+  filter(position == "TE") %>% 
+  select(!c(completions,attempts,passing_yards,passing_tds,passing_air_yards,passing_yards_after_catch,passing_first_downs,passing_2pt_conversions,sack_fumbles,sack_fumbles_lost,ypr,rookie_season,teams_offense_snaps,years_played,ypc,interceptions,comp_percentage,int_percentage,pass_td_percentage,offense_snaps))
+
+qb <- yearly %>% 
+  filter(position == "QB") %>% 
+  select(!c(receptions,targets,receiving_yards,receiving_tds,receiving_fumbles,receiving_fumbles_lost,receiving_air_yards,receiving_yards_after_catch,receiving_first_downs,receiving_2pt_conversions,rec_td_percentage,ypr,rookie_season,teams_offense_snaps,years_played,ypc,offense_snaps))
+
+rb <- yearly %>% 
+  filter(position == "RB") %>% 
+  select(!c(completions,attempts,passing_yards,passing_tds,passing_air_yards,passing_yards_after_catch,passing_first_downs,passing_2pt_conversions,sack_fumbles,sack_fumbles_lost,ypr,rookie_season,teams_offense_snaps,years_played,ypc,interceptions,comp_percentage,int_percentage,pass_td_percentage,offense_snaps))
+```
+
+```{r}
+fantasy <- yearly %>% 
+  select(name,position,team,season,fantasy_points_ppr,games)
+
+write.csv(fantasy,"C:/Users/12064/OneDrive - UW/Desktop/R Projects/fantasy.csv")
+
+write.csv(longqb,"C:/Users/12064/OneDrive - UW/Desktop/R Projects/longqb.csv")
+```
+
+```{r}
+longqb <- qb %>% 
+  pivot_longer(!c(name,position,team,season),
+                       names_to = "stat_type",
+                       values_to = "stats")
+longwr <- wr %>% 
+  pivot_longer(!c(name,position,team,season),
+                       names_to = "stat_type",
+                       values_to = "stats")
+longrb <- rb %>% 
+  pivot_longer(!c(name,position,team,season),
+                       names_to = "stat_type",
+                       values_to = "stats")
+longte <- te %>% 
+  pivot_longer(!c(name,position,team,season),
+                       names_to = "stat_type",
+                       values_to = "stats")
+               
+```
+
+```{r}
+weekly <- weekly %>% 
+  select(name,position,team,week,season,fantasy_points_ppr) %>% 
+  group_by(name) %>% 
+  filter(2022 %in% season)
+
+write.csv(weekly,"C:/Users/12064/OneDrive - UW/Desktop/R Projects/season_analysis.csv")
+
+write.csv(longrb,"C:/Users/12064/OneDrive - UW/Desktop/R Projects/longrb.csv")
+
+write.csv(longte,"C:/Users/12064/OneDrive - UW/Desktop/R Projects/longte.csv")
+
+write.csv(longwr,"C:/Users/12064/OneDrive - UW/Desktop/R Projects/longwr.csv")
+```
+
